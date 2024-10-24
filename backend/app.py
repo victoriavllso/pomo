@@ -1,25 +1,20 @@
-from flask import Flask, request, jsonify
-from flask_sqlalchemy import SQLAlchemy
-from dynaconf import FlaskDynaconf
+from flask import request, jsonify
+
 from src.User import User
 from src.Discipline import Discipline
 from src.Module import Module
-
+from config import data_base, create_app
 
 
 
 # ----------------- Configuração da aplicação Flask -----------------
 
 
-app = Flask(__name__) # Inicializa a aplicação Flask
-data_base = SQLAlchemy(app) # Inicializa o banco de dados
-settings = FlaskDynaconf(app,settings_files=["settings.toml", ".secrets.toml"])
+app = create_app() # inicia o flask
 
-
-app.config['SQLALCHEMY_DATABASE_URI'] = settings.DATABASE_URI # Define a URI do banco de dados
-# app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite://test.db"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = settings.MODIFICATIONS # Define se as modificações no banco de dados serão rastreadas
-app.config['SECRET_KEY'] = settings.SECRET_ # Define a chave secreta da aplicação
+with app.app_context():
+    data_base.drop_all()  # Apaga as tabelas existentes
+    data_base.create_all()  # Cria as tabelas novamente com as novas definições
 
 
 # ----------------- Rotas para criar, editar, retornar e deletar dados do usuário  -----------------
@@ -27,6 +22,11 @@ app.config['SECRET_KEY'] = settings.SECRET_ # Define a chave secreta da aplicaç
 @app.route('/register', methods=['POST'])
 def register_user():
     data = request.get_json()
+
+    if not data or 'username' not in data or 'email' not in data or 'password' not in data:
+        return "Dados inválidos, verifique os campos", 400
+
+
     new_user = User(username=data['username'], email=data['email'], password=data['password'])
     data_base.session.add(new_user)
     data_base.session.commit()

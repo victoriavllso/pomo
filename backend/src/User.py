@@ -1,4 +1,13 @@
-class User:
+from config import data_base
+
+class User(data_base.Model):
+    __tablename__ = 'users'
+
+    id = data_base.Column(data_base.Integer, primary_key=True)
+    username = data_base.Column(data_base.String(80), nullable=False)
+    email = data_base.Column(data_base.String(120), unique=True, nullable=False)
+    password = data_base.Column(data_base.String(80), nullable=False)
+
     def __init__(self, username, email, password):
         self.__username = username
         self.__email = email
