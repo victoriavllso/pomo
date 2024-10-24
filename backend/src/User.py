@@ -9,15 +9,15 @@ class User(data_base.Model):
     password = data_base.Column(data_base.String(80), nullable=False)
 
     def __init__(self, username, email, password):
-        self.__username = username
-        self.__email = email
-        self.__password = password
+        self.username = username
+        self.email = email
+        self.password = password
 
     def __str__(self):
-        return f"User({self.__username}, {self.__password})"
+        return f"User({self.username}, {self.password})"
 
     def __eq__(self, other):
-        return self.__username == other.username and self.__password == other.password
+        return self.username == other.username and self.password == other.password
 
     def __hash__(self):
-        return hash((self.__username, self.__password))
+        return hash((self.username, self.password))

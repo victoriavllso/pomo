@@ -7,11 +7,11 @@ class Discipline(data_base.Model):
     name = data_base.Column(data_base.String(80), nullable=False)
     
     def __init__(self, name, id):
-        self.__name = name
-        self.__id = id
+        self.name = name
+        self.id = id
 
     def __str__(self):
-        return f"User({self.__name}, {self.__id})"
+        return f"User({self.name}, {self.id})"
 
     def __hash__(self):
-        return hash(self.__id)
+        return hash(self.id)

@@ -11,3 +11,4 @@
 ## Para rodar o app
 
 `python3 app.py` (linux/Mac) ou `python app.py`
+
