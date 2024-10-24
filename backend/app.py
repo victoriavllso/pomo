@@ -4,8 +4,7 @@ from src.User import User
 from src.Discipline import Discipline
 from src.Module import Module
 from config import data_base, create_app
-
-
+from jose import jwt
 
 # ----------------- Configuração da aplicação Flask -----------------
 
@@ -13,7 +12,7 @@ from config import data_base, create_app
 app = create_app() # inicia o flask
 
 with app.app_context():
-    data_base.drop_all()  # Apaga as tabelas existentes
+    # data_base.drop_all()  # Apaga as tabelas existentes
     data_base.create_all()  # Cria as tabelas novamente com as novas definições
 
 
@@ -37,7 +36,7 @@ def get_user_data(id):
     user = User.query.get(id)
     if not user:
         return "Usuário não encontrado", 404
-    return jsonify(user), 200
+    return jsonify(user.to_dict()), 200
 
 @app.route('/users/<int:id>', methods=['PUT'])
 def edit_user_data(id):
@@ -72,7 +71,7 @@ def get_discipline(id):
     discipline = Discipline.query.get(id)
     if not discipline:
         return "Disciplina não encontrada", 404
-    return jsonify(discipline), 200
+    return jsonify(discipline.to_dict()), 200
 
 @app.route('/disciplines', methods=['PUT'])
 def edit_discipline(id):
@@ -104,16 +103,16 @@ def create_Module():
 
 @app.route('/module', methods=['GET'])
 def get_Module(id_subject):
-    Module = Module.query.get(id_subject)
+    module = Module.query.get(id_subject)
     if not Module:
         return "Sessão não encontrada", 404
-    return jsonify(Module), 200
+    return jsonify(module.to_dict()), 200
 
 
 @app.route('/module', methods=['PUT'])
 def edit_Module(id_subject):
     module = Module.query.get(id_subject)
-    if not Module:
+    if not module:
         return "Sessão não encontrada", 404
     data = request.get_json()
 
@@ -134,10 +133,10 @@ def edit_Module(id_subject):
 
 @app.route('/module', methods=['DELETE'])
 def delete_Module(id_subject):
-    Module = Module.query.get(id_subject)
-    if not Module:
+    module = Module.query.get(id_subject)
+    if not module:
         return "Sessão não encontrada", 404
-    data_base.session.delete(Module)
+    data_base.session.delete(module)
     data_base.session.commit()
     return "Sessão deletada com sucesso", 200
 

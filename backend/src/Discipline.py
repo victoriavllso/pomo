@@ -15,3 +15,9 @@ class Discipline(data_base.Model):
 
     def __hash__(self):
         return hash(self.id)
+    # Método para serializar o objeto Discipline
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'name': self.name
+        }

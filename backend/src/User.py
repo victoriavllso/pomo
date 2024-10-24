@@ -13,6 +13,14 @@ class User(data_base.Model):
         self.email = email
         self.password = password
 
+    # Método para serializar o objeto User
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'username': self.username,
+            'email': self.email,
+        }
+
     def __str__(self):
         return f"User({self.username}, {self.password})"
 

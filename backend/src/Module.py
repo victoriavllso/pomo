@@ -19,3 +19,13 @@ class Module(data_base.Model):
     
     def __hash__(self):
         return hash(self.id_subject)
+
+    def to_dict(self):
+        return {
+            'id': self.id,
+            'id_subject': self.id_subject,
+            'start_time': self.start_time,
+            'end_time': self.end_time,
+            'start_date': self.start_date,
+            'end_date': self.end_date
+        }
