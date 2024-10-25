@@ -1,3 +1,4 @@
+import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
@@ -19,3 +20,6 @@ def create_app():
 
 
     return app
+
+class Config:
+    SECRET_KEY = os.getenv("SECRET_KEY", "pomoseccom2024#_J23104231")  # use uma chave secreta forte

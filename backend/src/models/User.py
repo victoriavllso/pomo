@@ -7,7 +7,7 @@ class User(data_base.Model):
     id = data_base.Column(data_base.Integer, primary_key=True)
     name = data_base.Column(data_base.String(80), nullable=False)
     email = data_base.Column(data_base.String(120), unique=True, nullable=False)
-    password = data_base.Column(data_base.String(80), nullable=False)
+    password = data_base.Column(data_base.String(128), nullable=False)
     profile_image = data_base.Column(data_base.LargeBinary, nullable=True)
 
     disciplines = data_base.relationship('Discipline', backref='user', lazy=True, cascade="all, delete-orphan")
@@ -27,7 +27,7 @@ class User(data_base.Model):
             'id': self.id,
             'name': self.name,
             'email': self.email,
-            'password': self.password,
+            'password': str(self.password),
             'disciplines': [discipline.to_dict() for discipline in self.disciplines],
             'history': self.history.to_dict(),
         }

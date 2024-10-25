@@ -1,11 +1,15 @@
 # app/routes/user_routes.py
 
-import base64
+import datetime
+import bcrypt
 from flask import Blueprint, Response, request, jsonify
 from sqlalchemy.exc import IntegrityError
-from config import data_base
+from config import data_base, Config
+from .authentication import token_required
 from models.User import User
 from models.History import History
+from werkzeug.security import check_password_hash
+import jwt
 
 user_bp = Blueprint('user', __name__)
 
@@ -19,12 +23,13 @@ def register_user():
     name = request.form['name']
     email = request.form['email']
     password = request.form['password']
+    hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
     profile_image_file = request.files['profile_image']
 
     # Lê o arquivo como BLOB
     profile_image = profile_image_file.read()  # Mantém como BLOB
 
-    new_user = User(name=name, email=email, password=password, profile_image=profile_image)
+    new_user = User(name=name, email=email, password=hashed_password, profile_image=profile_image)
     data_base.session.add(new_user)
 
     try:
@@ -50,42 +55,39 @@ def register_user():
 
     return jsonify({"message": "Usuário criado com sucesso!"}), 201
 
-@user_bp.route('/user/<int:id>', methods=['GET'])
-def get_user_data(id):
-    user = User.query.get(id)
-    if not user:
-        return "Usuário não encontrado", 404
-    return jsonify(user.to_dict()), 200
+@user_bp.route('/user/', methods=['GET'])
+@token_required
+def get_user_data(current_user=None):
+    return jsonify(current_user.to_dict()), 200
 
-@user_bp.route('/user/<int:user_id>/profile_image', methods=['GET'])
-def get_profile_image(user_id):
-    user = data_base.session.query(User).filter_by(id=user_id).first()
-    if not user or not user.profile_image:
+@user_bp.route('/user/profile_image', methods=['GET'])
+@token_required
+def get_profile_image(current_user=None):
+    if not current_user.profile_image:
         return jsonify({"error": "Imagem não encontrada"}), 404
 
-    return Response(user.profile_image, mimetype='image/jpeg')
+    return Response(current_user.profile_image, mimetype='image/jpeg')
 
 @user_bp.route('/users/', methods=['GET'])
-def get_users_data():
+@token_required
+def get_users_data(current_user=None):
+
     users = User.query.all()
     return jsonify([user.to_dict() for user in users]), 200
 
-@user_bp.route('/users/<int:id>', methods=['PUT'])
-def edit_user_data(id):
-    user = User.query.get(id)
-    if not user:
-        return "Usuário não encontrado", 404
-
-    data = request.get_json()
+@user_bp.route('/user/', methods=['PUT'])
+@token_required
+def edit_user_data(current_user=None):
+    data = request.form
 
     if 'name' in data:
-        user.name = data['name']
+        current_user.name = data['name']
     if 'email' in data:
-        user.email = data['email']
+        current_user.email = data['email']
     if 'password' in data:
-        user.password = data['password']
-    if 'profile_picture' in data:  # Adicionando a edição da foto de perfil
-        user.profile_picture = data['profile_picture']
+        current_user.password = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
+    if 'profile_image' in request.files:  # Adicionando a edição da foto de perfil
+        current_user.profile_image = request.files['profile_image']
 
     try:
         data_base.session.commit()
@@ -99,12 +101,10 @@ def edit_user_data(id):
     
     return "Usuário editado com sucesso", 200
 
-@user_bp.route('/user/<int:id>', methods=['DELETE'])
-def delete_user(id):
-    user = User.query.get(id)
-    if not user:
-        return "Usuário não encontrado", 404
-    data_base.session.delete(user)
+@user_bp.route('/user/', methods=['DELETE'])
+@token_required
+def delete_user(current_user=None):
+    data_base.session.delete(current_user)
     try:
         data_base.session.commit()
     except Exception as e:
@@ -114,32 +114,39 @@ def delete_user(id):
     
     return "Usuário deletado com sucesso", 200
 
-@user_bp.route('/user/<int:user_id>/disciplines/', methods=['GET'])
-def get_disciplines_user(user_id):
-    # Busca o usuário pelo ID
-    user = User.query.get(user_id)
-
-    # Verifica se o usuário existe
-    if not user:
-        return jsonify({"error": "Usuário não encontrado"}), 404
+@user_bp.route('/user/disciplines/', methods=['GET'])
+@token_required
+def get_disciplines_user(current_user=None):
 
     # Pega todas as disciplinas associadas ao usuário
-    disciplines = user.disciplines
+    disciplines = current_user.disciplines
 
     # Retorna as disciplinas no formato JSON
     return jsonify([discipline.to_dict() for discipline in disciplines]), 200
 
-@user_bp.route('/user/<int:user_id>/history/', methods=['GET'])
-def get_history_user(user_id):
-    # Busca o usuário pelo ID
-    user = User.query.get(user_id)
-
-    # Verifica se o usuário existe
-    if not user:
-        return jsonify({"error": "Usuário não encontrado"}), 404
-
+@user_bp.route('/user/history/', methods=['GET'])
+@token_required
+def get_history_user(current_user=None):
     # Pega todas as disciplinas associadas ao usuário
-    history = user.history
+    history = current_user.history
 
     # Retorna as disciplinas no formato JSON
     return jsonify(history.to_dict()), 200
+
+@user_bp.route('/login', methods=['POST'])
+def login():
+    data = request.get_json()
+    if not data or 'email' not in data or 'password' not in data:
+        return jsonify({"error": "Dados inválidos, 'email' e 'password' são obrigatórios."}), 400
+
+    user = User.query.filter_by(email=data['email']).first()
+    if user and bcrypt.hashpw(data["password"].encode("utf-8"), user.password) == user.password:
+        # Criar o token JWT
+        token = jwt.encode({
+            'user_id': user.id,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(hours=1)  # expira em 1 hora
+        }, Config.SECRET_KEY.encode('utf-8'), algorithm='HS256')
+
+        return jsonify({"token": token}), 200
+
+    return jsonify({"error": "Credenciais inválidas."}), 401
