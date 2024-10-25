@@ -3,10 +3,10 @@ import 'course.dart';
 
 class CourseSquare extends StatelessWidget {
   final Course course;
-  final double completedHours; // Horas completadas
-  final double totalHours; // Total de horas a serem completadas
+  final double completedHours;
+  final double totalHours;
   final VoidCallback? onPressed;
-  final int? colored; // Pode ser nulo
+  final int? colored;
 
   const CourseSquare({
     super.key,
@@ -19,7 +19,7 @@ class CourseSquare extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // cria um quadrado 150x150
+
     return GestureDetector(
       onTap: onPressed,
       child: AspectRatio(
@@ -186,9 +186,7 @@ class NewDisciplineButton extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(right: 15),
       child: ElevatedButton(
-        onPressed: () {
-          // Ação para o botão
-        },
+        onPressed: onPressed,
         style: ElevatedButton.styleFrom(
           elevation: 0,
           backgroundColor: Colors.white.withOpacity(0.7),

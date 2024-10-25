@@ -1,8 +1,17 @@
+// main.dart
+
 import 'package:flutter/material.dart';
-import 'home_screen.dart';
+import 'package:provider/provider.dart';
+import 'user_model.dart';
+import 'login_screen.dart';
 
 void main() {
-  runApp(const PomoApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => UserModel(),
+      child: const PomoApp(),
+    ),
+  );
 }
 
 class PomoApp extends StatelessWidget {
@@ -10,8 +19,10 @@ class PomoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomeScreen(),
+    return MaterialApp(
+      title: 'PomoApp',
+      debugShowCheckedModeBanner: false,
+      home: const LoginScreen(),
     );
   }
 }

@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'gradient_background.dart';
+import 'courses_screen.dart';
+import 'package:provider/provider.dart';
+import 'user_model.dart';
 
 class StudyHoursScreen extends StatefulWidget {
   const StudyHoursScreen({super.key});
@@ -9,22 +12,42 @@ class StudyHoursScreen extends StatefulWidget {
 }
 
 class StudyHoursScreenState extends State<StudyHoursScreen> {
+  int _selectedValue = 0;
+
+  void _handleContinue() {
+    Provider.of<UserModel>(context, listen: false)
+        .setStudyHours(_selectedValue + 1);
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CoursesScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: GradientBackground(
+    return Scaffold(
+      body: GradientBackground(
         title: "Quantas **horas** você **quer estudar** por dia?",
         step: 3,
         totalSteps: 4,
         buttonName: "Continuar",
-        child: StudyHoursContent(),
+        buttonAction: _handleContinue,
+        child: StudyHoursContent(
+          onValueChanged: (value) {
+            setState(() {
+              _selectedValue = value;
+            });
+          },
+        ),
       ),
     );
   }
 }
 
 class StudyHoursContent extends StatefulWidget {
-  const StudyHoursContent({super.key});
+  final Function(int) onValueChanged;
+
+  const StudyHoursContent({super.key, required this.onValueChanged});
 
   @override
   StudyHoursContentState createState() => StudyHoursContentState();

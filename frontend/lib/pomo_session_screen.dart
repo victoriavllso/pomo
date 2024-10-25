@@ -1,9 +1,14 @@
+// pomo_session_screen.dart
+
 import 'package:flutter/material.dart';
 import 'gradient_background.dart';
 import 'dart:async';
+import 'course.dart';
 
 class PomoSessionScreen extends StatefulWidget {
-  const PomoSessionScreen({super.key});
+  final Course course;
+
+  const PomoSessionScreen({super.key, required this.course});
 
   @override
   State<PomoSessionScreen> createState() => _PomoSessionScreenState();
@@ -14,22 +19,48 @@ class _PomoSessionScreenState extends State<PomoSessionScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: GradientBackground(
-          gradientInverted: true,
-          child: Padding(
-              padding: const EdgeInsets.only(top: 200, left: 60, right: 60),
-              child: Stack(
+    return Scaffold(
+      body: GradientBackground(
+        gradientInverted: true,
+        child: Padding(
+          padding: const EdgeInsets.only(top: 200, left: 60, right: 60),
+          child: Stack(
+            children: [
+              Stack(
+                alignment: Alignment.center,
                 children: [
-                  Stack(
-                    alignment: Alignment.center,
-                    children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 50),
-                        height: 550,
+                  Container(
+                    margin: const EdgeInsets.only(top: 50),
+                    height: 550,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          spreadRadius: 5,
+                          blurRadius: 7,
+                          offset: const Offset(0, 3),
+                        ),
+                      ],
+                    ),
+                  ),
+                  TimerCircle(isPaused: isPaused),
+                  // Ícone de pausa/play
+                  Padding(
+                    padding: const EdgeInsets.only(top: 420),
+                    child: GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          isPaused = !isPaused;
+                        });
+                      },
+                      child: Container(
+                        width: 90,
+                        height: 90,
                         decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
+                          color: const Color(0xFFF66337),
+                          shape: BoxShape.circle,
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
@@ -39,97 +70,77 @@ class _PomoSessionScreenState extends State<PomoSessionScreen> {
                             ),
                           ],
                         ),
-                      ),
-                      TimerCircle(isPaused: isPaused),
-                      // Icone de pausa/play
-                      Padding(
-                        padding: const EdgeInsets.only(top: 420),
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              isPaused = !isPaused;
-                            });
-                          },
-                          child: Container(
-                            width: 90,
-                            height: 90,
-                            decoration: BoxDecoration(
-                              color: const Color(0xFFF66337),
-                              shape: BoxShape.circle,
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  spreadRadius: 5,
-                                  blurRadius: 7,
-                                  offset: const Offset(0, 3),
-                                ),
-                              ],
-                            ),
-                            child: Icon(
-                              isPaused ? Icons.play_arrow : Icons.pause,
-                              size: 40,
-                              color: Colors.white,
-                            ),
-                          ),
+                        child: Icon(
+                          isPaused ? Icons.play_arrow : Icons.pause,
+                          size: 40,
+                          color: Colors.white,
                         ),
                       ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: Stack(
-                      children: [
-                        Container(
-                          height: 90,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF66337),
-                            borderRadius: BorderRadius.circular(30),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.1),
-                                spreadRadius: 5,
-                                blurRadius: 7,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: const Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                              children: [
-                                // Ícone do curso
-                                Text(
-                                  '🍅',
-                                  style: TextStyle(fontSize: 40),
-                                ),
-                                Text(
-                                  'Matematica Discreta',
-                                  style: TextStyle(
-                                    fontSize: 25,
-                                    fontFamily: 'Cera Pro',
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ]),
-                        ),
-                      ],
                     ),
                   ),
                 ],
-              ))),
+              ),
+              // Cartão com informações do curso
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Stack(
+                  children: [
+                    Container(
+                      height: 90,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFF66337),
+                        borderRadius: BorderRadius.circular(30),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.1),
+                            spreadRadius: 5,
+                            blurRadius: 7,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          // Ícone do curso
+                          Text(
+                            widget.course.icon,
+                            style: const TextStyle(fontSize: 40),
+                          ),
+                          Text(
+                            widget.course.name,
+                            style: const TextStyle(
+                              fontSize: 25,
+                              fontFamily: 'Cera Pro',
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
 
 class TimerCircle extends StatefulWidget {
   final bool isPaused;
+
   const TimerCircle({super.key, required this.isPaused});
 
   @override
   TimerCircleState createState() => TimerCircleState();
 }
 
-class TimerCircleState extends State<TimerCircle> with SingleTickerProviderStateMixin {
+class TimerCircleState extends State<TimerCircle>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   Duration totalDuration = const Duration(minutes: 25);
   Duration breakDuration = const Duration(minutes: 5);
@@ -213,8 +224,10 @@ class TimerCircleState extends State<TimerCircle> with SingleTickerProviderState
   }
 
   String _formatTime(Duration duration) {
-    String minutes = duration.inMinutes.remainder(60).toString().padLeft(2, '0');
-    String seconds = duration.inSeconds.remainder(60).toString().padLeft(2, '0');
+    String minutes =
+    duration.inMinutes.remainder(60).toString().padLeft(2, '0');
+    String seconds =
+    duration.inSeconds.remainder(60).toString().padLeft(2, '0');
     return '$minutes:$seconds';
   }
 
@@ -239,7 +252,7 @@ class TimerCircleState extends State<TimerCircle> with SingleTickerProviderState
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              onBreak ? 'intervalo' : 'foco',
+              onBreak ? 'Intervalo' : 'Foco',
               style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
@@ -249,7 +262,7 @@ class TimerCircleState extends State<TimerCircle> with SingleTickerProviderState
             ),
             const SizedBox(height: 10),
             Text(
-              '$sessionCount/$maxSessions sessões',
+              '${sessionCount + 1}/$maxSessions sessões',
               style: TextStyle(
                 fontSize: 22,
                 fontFamily: 'Cera Pro',

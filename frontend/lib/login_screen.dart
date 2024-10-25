@@ -1,22 +1,23 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'gradient_background.dart';
-import 'package:flutter_svg/svg.dart';
 import 'utils.dart';
+import 'sing_in_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: GradientBackground(
+    return Scaffold(
+      body: GradientBackground(
           gradientInverted: true,
           backButton: false,
           child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 80),
               child: Column(
                 children: [
-                  SizedBox(height: 200),
+                  const SizedBox(height: 200),
                   SvgPicture.asset('assets/images/logo.svg'),
                   formattedText(
                     text: 'você está a um passo do seu **eu mais organizado.**',
@@ -26,10 +27,13 @@ class LoginScreen extends StatelessWidget {
                     thin: true,
                   ),
                   const SizedBox(height: 80),
-
                   ElevatedButton(
                     onPressed: () {
-                      // Ação para o botão
+                      // Navega para a tela de sign in
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => const SingInScreen()),
+                      );
                     },
                     style: ElevatedButton.styleFrom(
                       overlayColor: Colors.white60,

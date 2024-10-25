@@ -1,8 +1,15 @@
+// home_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:provider/provider.dart';
+import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
 import 'course_square.dart';
 import 'course.dart';
-import 'package:fading_edge_scrollview/fading_edge_scrollview.dart';
+import 'user_model.dart';
+import 'select_course_screen.dart';
+import 'pomo_session_screen.dart';
+import 'course_creator_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -16,20 +23,35 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   void dispose() {
-    // Descarta o ScrollController
     _scrollController.dispose();
     super.dispose();
   }
 
+  void _navigateToSelectCourse() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const SelectCourseScreen()),
+    );
+  }
+
+  void _navigateToPomodoroSession(Course course) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => PomoSessionScreen(course: course)),
+    );
+  }
+
+  void _navigateToCreateCourse() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const CourseCreatorScreen()),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    // Lista de cursos de exemplo
-    List<Course> courses = [
-      Course(name: 'Matemática', id: 1212, icon: '📐', priority: 3),
-      Course(name: 'Português', id: 1213, icon: '📖', priority: 2),
-      Course(name: 'História', id: 1214, icon: '📜', priority: 1),
-      // Adicione mais cursos conforme necessário
-    ];
+    final userModel = Provider.of<UserModel>(context);
+    final courses = userModel.courses;
 
     return Scaffold(
       backgroundColor: const Color(0xFFFFF2EE),
@@ -39,12 +61,12 @@ class _HomeScreenState extends State<HomeScreen> {
           children: [
             const SizedBox(height: 20),
             Row(
-              children: const [
+              children: [
                 Padding(
-                  padding: EdgeInsets.only(left: 15),
+                  padding: const EdgeInsets.only(left: 15),
                   child: Text(
-                    'Oi, Pedro! 👋',
-                    style: TextStyle(
+                    'Oi, ${userModel.name}! 👋',
+                    style: const TextStyle(
                       fontSize: 40,
                       fontWeight: FontWeight.w500,
                       fontFamily: 'Cera Pro',
@@ -56,9 +78,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 20),
             GestureDetector(
-              onTap: () {
-                // Adicione a funcionalidade para o botão de play
-              },
+              onTap: _navigateToSelectCourse,
               child: Center(
                 child: Container(
                   decoration: BoxDecoration(
@@ -98,7 +118,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
             const SizedBox(height: 10),
-            // Ajuste da ListView para altura de 100 pixels e margens laterais de 60 pixels
+            // Lista de disciplinas
             SizedBox(
               height: 250,
               child: Container(
@@ -109,20 +129,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: ListView.builder(
                     controller: _scrollController,
                     scrollDirection: Axis.horizontal,
-                    itemCount: courses.length + 1,
-                    // +1 para o NewDisciplineButton
+                    itemCount: courses.length + 1, // +1 para o botão de nova disciplina
                     itemBuilder: (context, index) {
                       if (index == 0) {
-                        // Primeiro item é o NewDisciplineButton
-                        return const NewDisciplineButton();
+                        // Primeiro item é o botão de adicionar nova disciplina
+                        return NewDisciplineButton(
+                          onPressed: _navigateToCreateCourse,
+                        );
                       } else {
-                        // Incrementa 'colored' para cada item
-                        int coloredValue = index; // Começa em 1
+                        final course = courses[index - 1];
                         return CourseSquare(
-                          course: courses[index - 1],
-                          completedHours: 1.2 * index, // Dados de exemplo
-                          totalHours: 4.0 * index, // Dados de exemplo
-                          colored: coloredValue,
+                          course: course,
+                          completedHours: 1.2 * index, // Substitua pelos dados reais
+                          totalHours: 4.0 * index, // Substitua pelos dados reais
+                          colored: index,
+                          onPressed: () => _navigateToPomodoroSession(course),
                         );
                       }
                     },

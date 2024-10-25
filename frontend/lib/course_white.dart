@@ -1,3 +1,5 @@
+// course_white.dart
+
 import 'package:flutter/material.dart';
 import 'course.dart';
 
@@ -94,9 +96,7 @@ class NewDisciplineButton extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 60, vertical: 5),
       child: Center(
         child: ElevatedButton(
-          onPressed: () {
-            // Ação para o botão
-          },
+          onPressed: onPressed,
           style: ElevatedButton.styleFrom(
             elevation: 0,
             backgroundColor: Colors.white.withOpacity(0.8),
