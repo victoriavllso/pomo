@@ -11,6 +11,7 @@ class GradientBackground extends StatelessWidget {
   final int? step;
   final int? totalSteps;
   final String? buttonName;
+  final void Function()? buttonAction;
   final Widget? child;
 
   const GradientBackground({
@@ -23,6 +24,7 @@ class GradientBackground extends StatelessWidget {
     this.step,
     this.totalSteps,
     this.buttonName,
+    this.buttonAction,
     this.child,
   });
 
@@ -108,9 +110,7 @@ class GradientBackground extends StatelessWidget {
             padding: const EdgeInsets.only(top: 600),
             child: Center(
               child: ElevatedButton(
-                onPressed: () {
-                  // Ação para o botão
-                },
+                onPressed: buttonAction,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFFF3C00),
                   padding:

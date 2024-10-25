@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
+import 'home_screen.dart';
 
 void main() {
   runApp(const PomoApp());
@@ -10,6 +10,8 @@ class PomoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const LoginScreen();
+    return const MaterialApp(
+      home: SingInScreen(),
+    );
   }
 }
