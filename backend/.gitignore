@@ -34,3 +34,4 @@ instance/
 .idea/
 .vscode/
 *.swp
+.vercel
