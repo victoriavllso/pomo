@@ -28,13 +28,7 @@ class IconScreenState extends State<IconScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        home: GradientBackground(
-      title: "Agora, **adicione um ícone** para seu perfil!",
-      step: 2,
-      totalSteps: 4,
-      buttonName: "Continuar",
-      child: Center(
+    return Center(
         child: GestureDetector(
           onTap: _pickImage,
           child: Column(
@@ -69,7 +63,6 @@ class IconScreenState extends State<IconScreen> {
             ],
           ),
         ),
-      ),
-    ));
+    );
   }
 }

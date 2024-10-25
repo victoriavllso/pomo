@@ -4,7 +4,7 @@ import 'course.dart';
 class CourseSquare extends StatelessWidget {
   final Course course;
   final double completedHours; // Horas completadas
-  final double totalHours; // Total de horas a serem completadas
+  final int totalHours; // Total de horas a serem completadas
 
   const CourseSquare({
     super.key,

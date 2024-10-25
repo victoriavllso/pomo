@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'authenticator_provider.dart';
 import 'gradient_background.dart';
 import 'course_white.dart';
 import 'course.dart';
@@ -16,6 +18,8 @@ class _CoursesScreenState extends State<CoursesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final authProvider = Provider.of<AuthProvider>(context, listen: true);
+    final userCourses = authProvider.user?.courses;
     return MaterialApp(
       home: GradientBackground(
         title: "Quais são **suas disciplinas?**",
@@ -31,15 +35,8 @@ class _CoursesScreenState extends State<CoursesScreen> {
             child: ListView(
               controller: _scrollController, // Controlador da lista
               children: [
-                const NewDisciplineButton(), // Botão para adicionar nova disciplina
-                CourseWhite(course: Course(name: 'Matemática', id: 8394, icon: "🧮", priority: 2)),
-                CourseWhite(course: Course(name: 'Ciências', id: 2398, icon: "🔬", priority: 3)),
-                CourseWhite(course: Course(name: 'História', id: 4839, icon: "📜", priority: 4)),
-                CourseWhite(course: Course(name: 'História', id: 4839, icon: "📜", priority: 4)),
-                CourseWhite(course: Course(name: 'História', id: 4839, icon: "📜", priority: 4)),
-                CourseWhite(course: Course(name: 'História', id: 4839, icon: "📜", priority: 4)),
-                CourseWhite(course: Course(name: 'História', id: 4839, icon: "📜", priority: 4)),
-                // Adicione mais cursos aqui
+                const NewDisciplineButton(), // Seu botão constante
+                ...?userCourses?.map((course) => CourseWhite(course: course)) // Mapeia os cursos para CourseWhite
               ],
             ),
           ),

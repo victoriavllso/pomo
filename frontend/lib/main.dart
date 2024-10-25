@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'login_screen.dart';
+import 'authenticator_provider.dart';
+import 'package:provider/provider.dart';
+import 'gradient_background.dart';
+import 'icon_screen.dart';
 
 void main() {
   runApp(const PomoApp());
@@ -10,6 +13,14 @@ class PomoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const LoginScreen();
+    return ChangeNotifierProvider(
+      create: (context) => AuthProvider(baseUrl: 'https://127.0.0.1'),
+      child: const MaterialApp(
+        home: GradientBackground(
+        gradientInverted: true,
+        backButton: false,
+        child: IconScreen()),
+      ),
+    );
   }
 }
