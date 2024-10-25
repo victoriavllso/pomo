@@ -5,21 +5,31 @@ import 'utils.dart';
 class GradientBackground extends StatelessWidget {
   final bool gradientInverted;
   final String? title;
+  final double titleSize;
+  final String? subTitle;
   final bool backButton;
-  final String? step; // colocar no formato "1/4" = step 1 de 4
+  final int? step;
+  final int? totalSteps;
+  final String? buttonName;
   final Widget? child;
 
   const GradientBackground({
     super.key,
     this.gradientInverted = false,
     this.title,
+    this.titleSize = 36,
+    this.subTitle,
     this.backButton = true,
     this.step,
+    this.totalSteps,
+    this.buttonName,
     this.child,
   });
 
   @override
   Widget build(BuildContext context) {
+    final double topPaddingTitle = subTitle != null ? 150 : 200;
+
     return Scaffold(
         body: Stack(
       children: [
@@ -62,12 +72,64 @@ class GradientBackground extends StatelessWidget {
                     width: 50),
               )),
 
+        // renderizando a barra de progresso
+        if (step != null && totalSteps != null)
+          (renderProgressBar(totalSteps: totalSteps!, currentStep: step!)),
+
+        // renderizando o titulo da pagina
+
         if (title != null)
-          formattedText(
-            text: title!,
-            fontSize: 42,
-            top: 200,
-            horizontalMargin: 60,
+          Column(
+            children: [
+              formattedText(
+                text: title!,
+                fontSize: titleSize,
+                top: topPaddingTitle,
+                horizontalMargin: 60,
+              ),
+              if (subTitle != null)
+                Padding(
+                  padding: const EdgeInsets.only(left: 60, right: 60, top: 10),
+                  child: (Text(
+                    subTitle!,
+                    style: const TextStyle(
+                      fontFamily: 'Cera Pro',
+                      fontWeight: FontWeight.w300,
+                      fontSize: 22,
+                      color: Colors.white,
+                    ),
+                  )),
+                ),
+            ],
+          ),
+
+        if (buttonName != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 600),
+            child: Center(
+              child: ElevatedButton(
+                onPressed: () {
+                  // Ação para o botão
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFFF3C00),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 120, vertical: 26),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(60),
+                  ),
+                ),
+                child: Text(
+                  buttonName!,
+                  style: const TextStyle(
+                    fontFamily: 'Cera Pro',
+                    fontWeight: FontWeight.w400,
+                    fontSize: 30,
+                    color: Colors.white,
+                  ),
+                ),
+              ),
+            ),
           ),
 
         if (child != null) child!, // Renderiza o widget filho se houver

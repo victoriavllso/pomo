@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'name_screen.dart';
+import 'login_screen.dart';
 
 void main() {
   runApp(const PomoApp());
@@ -10,6 +10,6 @@ class PomoApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const NameScreen();
+    return const LoginScreen();
   }
 }
